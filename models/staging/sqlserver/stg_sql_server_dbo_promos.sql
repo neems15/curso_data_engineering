@@ -11,12 +11,12 @@ WITH stg_promos AS (
 
 renamed_casted AS (
     SELECT
-        promo_id AS promo_name
+        promo_id::varchar(50) AS promo_name
         , md5 (promo_id) AS promo_id --te devuelve lo mismo, en orders la aplicamos igual para mantenener la idempotencia 
-        , discount AS discount_usd
-        , status
+        , discount::float AS discount_usd
+        , status::varchar(50)
         , convert_timezone ('UTC', _fivetran_synced) AS date_load
-        , _fivetran_deleted AS delete_status
+        , _fivetran_deleted AS delete_status ------------------------------------??
         
     FROM stg_promos
 

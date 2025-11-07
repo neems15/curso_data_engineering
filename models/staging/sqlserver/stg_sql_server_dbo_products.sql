@@ -1,6 +1,6 @@
 {{
   config(
-    materialized='table'
+    materialized='view'
   )
 }}
 
@@ -16,7 +16,7 @@ renamed_casted AS (
         , name
         , inventory
         , convert_timezone ('UTC', _fivetran_synced) AS date_load
-        , _fivetran_deleted AS delete_status
+        , _fivetran_deleted AS delete_status ----------------------------------??????
         
     FROM stg_products
     )
