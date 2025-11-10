@@ -37,7 +37,7 @@ models:
     # Applies to all files under models/example/
     +meta:
       example:
-        +materialized: table
+        +materialized: view
 
 seeds:
   +database: "ALUMNO22_DEV_BRONZE_DB"

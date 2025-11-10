@@ -1,8 +1,3 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
 
 WITH stg_addresses AS (
     SELECT * 

@@ -1,8 +1,3 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
 
 WITH stg_promos AS (
     SELECT * 
@@ -14,7 +9,10 @@ renamed_casted AS (
         promo_id::varchar(50) AS promo_name
         , md5 (promo_id) AS promo_id --te devuelve lo mismo, en orders la aplicamos igual para mantenener la idempotencia 
         , discount::float AS discount_usd
-        , status::varchar(50)
+        , (CASE 
+                WHEN status = 'active' THEN TRUE
+                ELSE FALSE
+            END)::varchar(50) AS IsActive,
         , convert_timezone ('UTC', _fivetran_synced) AS date_load
         , _fivetran_deleted AS delete_status ------------------------------------??
         

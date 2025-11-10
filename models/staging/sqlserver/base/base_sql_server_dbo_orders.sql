@@ -1,9 +1,14 @@
-
+{{ 
+    config(
+        materialized = 'incremental',
+        unique_key = 'order_id'
+    ) 
+}}
 
 WITH source AS (
 
     SELECT * 
-    FROM {{ ref('base_sql_server_dbo_orders') }}
+    FROM {{ source('sql_server_dbo', 'orders') }}
 
     {% if is_incremental() %}
         WHERE _fivetran_synced > (SELECT MAX(_fivetran_synced) FROM {{ this }})

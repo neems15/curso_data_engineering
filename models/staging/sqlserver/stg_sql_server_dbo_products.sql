@@ -1,8 +1,3 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
 
 WITH stg_products AS (
     SELECT * 
@@ -11,12 +6,12 @@ WITH stg_products AS (
 
 renamed_casted AS (
     SELECT
-        product_id 
-        , price 
-        , name
-        , inventory
+        product_id::VARCHAR(256)  
+        , price::FLOAT 
+        , name::VARCHAR(256)  
+        , inventory::NUMBER(38,0)
         , convert_timezone ('UTC', _fivetran_synced) AS date_load
-        , _fivetran_deleted AS delete_status ----------------------------------??????
+        , _fivetran_deleted::BOOLEAN AS delete_status ----------------------------------??????
         
     FROM stg_products
     )

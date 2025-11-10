@@ -25,10 +25,11 @@ WITH stg_budget_products AS (
 
 renamed_casted AS (
     SELECT
-          _row
-        , month
-        , quantity 
-        , _fivetran_synced
+          _row::NUMBER(38,0)
+        , month::DATE
+        , quantity::NUMBER(38,0)
+        , product_id::VARCHAR(256) 
+        , convert_timezone ('UTC', _fivetran_synced) AS date_load
     FROM stg_budget_products
     )
 

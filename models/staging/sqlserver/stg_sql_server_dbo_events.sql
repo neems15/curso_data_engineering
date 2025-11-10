@@ -1,8 +1,4 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
+
 
 WITH stg_events AS (
     SELECT * 
@@ -17,9 +13,9 @@ renamed_casted AS (
         , user_id::VARCHAR(50)
         , product_id::VARCHAR(50)
         , session_id::VARCHAR(50)
-        , convert_timezone ('UTC', created_at) AS created_at_utc
+        , convert_timezone ('UTC', created_at)::TIMESTAMP_TZ(9) AS created_at_utc
         , order_id::VARCHAR(50)
-        , convert_timezone ('UTC', _fivetran_synced) AS date_load
+        , convert_timezone ('UTC', _fivetran_synced)::TIMESTAMP_TZ(9) AS date_load
         , _fivetran_deleted AS delete_status ---------------------------------???
         
     FROM stg_events
