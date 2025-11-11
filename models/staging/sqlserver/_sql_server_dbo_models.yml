@@ -368,8 +368,8 @@ models:
         description: ""
         data_tests:
           - relationships:
-                to: ref('stg_sql_server_dbo_addresses')
-                field: address_id  
+              to: ref('stg_sql_server_dbo_addresses')
+              field: address_id
       - name: updated_at
         data_type: timestamp_tz
         description: ""
@@ -399,4 +399,17 @@ models:
         description: ""
       - name: _fivetran_synced
         data_type: timestamp_tz
+        description: ""
+
+  - name: shipping_service
+    description: ""
+    columns:
+      - name: shipping_id
+        data_type: varchar
+        data_tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo_shipping_service')
+              field: shipping_id
+      - name: shipping_service
+        data_type: varchar
         description: ""
