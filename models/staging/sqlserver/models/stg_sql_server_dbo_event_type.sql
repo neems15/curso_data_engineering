@@ -8,6 +8,8 @@ renamed_casted AS (
     SELECT DISTINCT
     md5(event_type) AS event_type_id
     , event_type AS event_type
+    , date_load
+    , delete_status  
         
     FROM stg_event_type
 
