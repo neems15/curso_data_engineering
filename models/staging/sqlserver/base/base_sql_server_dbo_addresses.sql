@@ -6,7 +6,7 @@ WITH stg_addresses AS (
 
 renamed_casted AS (
     SELECT
-        md5(country || zipcode || state)::VARCHAR(50) AS country_id 
+        md5(country)::VARCHAR(50) AS country_id 
         , zipcode::NUMBER(38,0) 
         , country::VARCHAR(50)
         , address::VARCHAR(150)

@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: sql_server_dbo
     description: Source data extracted from SQL Server (bronze layer)
-    database: alumno22_dev_bronze_db
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB"
     schema: sql_server_dbo
 
     quoting:

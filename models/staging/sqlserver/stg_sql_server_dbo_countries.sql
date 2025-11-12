@@ -4,10 +4,11 @@ WITH stg_countries AS (
 ),
 
 renamed_casted AS (
-    SELECT
-        md5(country || zipcode || state) as country_id
-        , zipcode 
-        , country
+    SELECT DISTINCT
+        md5(country) as country_id
+        , country AS country_name
+        , md5(zipcode) as zipcode_id 
+        , zipcode
         , state --- coalesce??
         , date_load
         , delete_status
