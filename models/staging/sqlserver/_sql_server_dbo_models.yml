@@ -1,0 +1,286 @@
+version: 2
+
+models:
+  - name: addresses
+    description: "List of all user addresses."
+    columns:
+      - name: address_id
+        data_type: varchar(50)
+        tests:
+          - unique
+          - not_null
+      - name: zipcode
+        data_type: number
+      - name: country
+        data_type: varchar(50)
+      - name: address
+        data_type: varchar(150)
+      - name: state
+        data_type: varchar(50)
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: events
+    description: "Event tracking data."
+    columns:
+      - name: event_id
+        data_type: varchar(50)
+        tests:
+          - not_null
+          - unique
+      - name: page_url
+        data_type: varchar(200)
+      - name: event_type_id
+        data_type: varchar(50)
+      - name: user_id
+        data_type: varchar(50)
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_users')
+                field: user_id
+      - name: product_id
+        data_type: varchar(50)
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_products')
+                field: product_id
+      - name: session_id
+        data_type: varchar(50)
+      - name: created_at
+        data_type: timestamp_tz
+      - name: order_id
+        data_type: varchar(50)
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_orders')
+                field: order_id
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: event_type
+    description: "Reference of possible event types."
+    columns:
+      - name: event_type_id
+        data_type: varchar
+        tests:
+          - relationships:
+              arguments:
+                to: ref('base_sql_server_dbo_events')
+                field: event_type_id
+      - name: event_type
+        data_type: varchar
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: orders
+    description: "Orders placed by users."
+    columns:
+      - name: order_id
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+      - name: shipping_service
+        data_type: varchar
+      - name: shipping_cost
+        data_type: float
+      - name: address_id
+        data_type: varchar
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_addresses')
+                field: address_id
+      - name: created_at
+        data_type: timestamp_tz
+      - name: promo_id
+        data_type: varchar
+        tests:
+          - relationships:
+              arguments:
+                to: ref('promos')
+                field: promo_id
+      - name: estimated_delivery_at
+        data_type: timestamp_tz
+      - name: order_cost
+        data_type: float
+      - name: user_id
+        data_type: varchar
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_users')
+                field: user_id
+      - name: order_total
+        data_type: float
+      - name: delivered_at
+        data_type: timestamp_tz
+      - name: tracking_id
+        data_type: varchar
+      - name: status
+        data_type: varchar
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: order_items
+    description: "Items included in each order."
+    columns:
+      - name: order_id
+        data_type: varchar
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_orders')
+                field: order_id
+      - name: product_id
+        data_type: varchar
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_products')
+                field: product_id
+      - name: quantity
+        data_type: number
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: products
+    config:
+      contract:
+        enforced: true
+    description: "Product catalog."
+    columns:
+      - name: product_id
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+      - name: product_name
+        data_type: varchar
+        tests:
+          - not_null
+      - name: unit_price_usd
+        data_type: float
+        tests:
+          - not_null
+      - name: inventory
+        data_type: number
+        tests:
+          - not_null
+      - name: date_load
+        data_type: timestamp_tz
+        tests:
+          - not_null
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: promos
+    description: "Promotions and discounts."
+    columns:
+      - name: promo_id
+        data_type: varchar
+        tests:
+          - not_null
+          - unique
+      - name: discount
+        data_type: number
+      - name: status
+        data_type: varchar
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: users
+    description: "User information."
+    columns:
+      - name: user_id
+        data_type: varchar
+        tests:
+          - unique
+          - not_null
+      - name: updated_at
+        data_type: timestamp_tz
+      - name: address_id
+        data_type: varchar
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_addresses')
+                field: address_id
+      - name: last_name
+        data_type: varchar
+      - name: created_at
+        data_type: timestamp_tz
+      - name: phone_number
+        data_type: varchar
+      - name: total_orders
+        data_type: number
+      - name: first_name
+        data_type: varchar
+      - name: email
+        data_type: varchar
+      - name: _fivetran_deleted
+        data_type: boolean
+      - name: _fivetran_synced
+        data_type: timestamp_tz
+
+  - name: shipping_service
+    description: "Shipping service details."
+    columns:
+      - name: shipping_id
+        data_type: varchar
+        tests:
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_sql_server_dbo_shipping_service')
+                field: shipping_id
+      - name: shipping_service
+        data_type: varchar
+
+  - name: countries
+    description: "Derived model aggregating country, zipcode, and state from addresses."
+    columns:
+      - name: country_id
+        description: "Unique identifier (MD5 hash of country + zipcode + state)."
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('base_sql_server_dbo_addresses')
+                field: country_id
+      - name: zipcode
+        description: "Postal code from the address."
+        tests:
+          - not_null
+      - name: country
+        description: "Country name from the address source."
+        tests:
+          - not_null
+      - name: state
+        description: "State or region name."
+        tests:
+          - not_null
+      - name: date_load
+        description: "Date when data was loaded into the warehouse."
+        tests:
+          - not_null
+      - name: delete_status
+        description: "Flag indicating soft deletion status from the source system."

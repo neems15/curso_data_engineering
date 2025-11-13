@@ -1,0 +1,351 @@
+version: 2
+
+sources:
+  - name: sql_server_dbo
+    description: Source data extracted from SQL Server (bronze layer)
+    database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB"
+    schema: sql_server_dbo
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    tables:
+      - name: addresses
+        description: Contains customer delivery address information.
+        columns:
+          - name: address_id
+            data_type: varchar
+            description: UUID that identifies a delivery address.
+            data_tests:
+              - unique
+              - not_null
+          - name: zipcode
+            data_type: number
+            description: Postal code of the address.
+            data_tests:
+              - not_null
+              - positive_values
+          - name: country
+            data_type: varchar
+            description: Country name.
+            data_tests:
+              - not_null
+          - name: address
+            data_type: varchar
+            description: Full delivery address.
+            data_tests:
+              - not_null
+          - name: state
+            data_type: varchar
+            description: Name of the state or region.
+            data_tests:
+              - not_null
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: Indicator showing if the record was deleted in source.
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: Timestamp of the last sync from Fivetran.
+            data_tests:
+              - not_null
+        config:
+          loaded_at_field: _fivetran_synced
+
+      - name: events
+        description: Captures user activity events on the website or app.
+        columns:
+          - name: event_id
+            data_type: varchar
+            description: Unique identifier for the event.
+            data_tests:
+              - unique
+              - not_null
+          - name: page_url
+            data_type: varchar
+            description: Web page URL where the event occurred.
+            data_tests:
+              - not_null
+          - name: event_type
+            data_type: varchar
+            description: Type of user interaction (e.g., page_view, click, add_to_cart).
+            data_tests:
+              - not_null
+          - name: user_id
+            data_type: varchar
+            description: Identifier for the user who performed the event.
+            data_tests:
+              - not_null
+          - name: product_id
+            data_type: varchar
+            description: Identifier of the related product, if applicable.
+          - name: session_id
+            data_type: varchar
+            description: Identifier of the session where the event occurred.
+            data_tests:
+              - not_null
+          - name: created_at
+            data_type: timestamp_ntz
+            description: Timestamp when the event was created.
+            data_tests:
+              - not_null
+          - name: order_id
+            data_type: varchar
+            description: Associated order ID, if the event is related to an order.
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: Indicator for deleted events.
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: Timestamp of the last data sync from Fivetran.
+            data_tests:
+              - not_null
+        config:
+          loaded_at_field: _fivetran_synced
+
+      - name: orders
+        description: Contains customer order details.
+        columns:
+          - name: order_id
+            data_type: varchar
+            description: Unique identifier for the order.
+            data_tests:
+              - unique
+              - not_null
+          - name: shipping_service
+            data_type: varchar
+            description: Shipping company used to deliver the order.
+          - name: shipping_cost
+            data_type: float
+            description: Cost of the shipping service.
+            data_tests:
+              - not_null
+              - positive_values
+          - name: address_id
+            data_type: varchar
+            description: Identifier of the shipping address related to the order.
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: ref('addresses')
+                    field: address_id
+          - name: created_at
+            data_type: timestamp_tz
+            description: Timestamp when the order was created.
+            data_tests:
+              - not_null
+          - name: promo_id
+            data_type: varchar
+            description: Promotion applied to the order, if any.
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: ref('promos')
+                    field: promo_id
+          - name: estimated_delivery_at
+            data_type: timestamp_tz
+            description: Estimated delivery date for the order.
+          - name: order_cost
+            data_type: float
+            description: Base cost of the order before discounts and shipping.
+          - name: user_id
+            data_type: varchar
+            description: Identifier for the user who placed the order.
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: ref('users')
+                    field: user_id
+          - name: order_total
+            data_type: float
+            description: Total amount charged for the order (including shipping and discounts).
+          - name: delivered_at
+            data_type: timestamp_tz
+            description: Timestamp when the order was delivered.
+          - name: tracking_id
+            data_type: varchar
+            description: Tracking number provided by the shipping service.
+          - name: status
+            data_type: varchar
+            description: Current status of the order (e.g., pending, shipped, delivered, canceled).
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: Indicator showing if the record was deleted in source.
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: Timestamp of the last sync from Fivetran.
+            data_tests:
+              - not_null
+        config:
+          loaded_at_field: _fivetran_synced
+
+      - name: order_items
+        description: Contains information about items included in each order.
+        columns:
+          - name: order_id
+            data_type: varchar
+            description: Identifier of the related order.
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: ref('orders')
+                    field: order_id
+          - name: product_id
+            data_type: varchar
+            description: Identifier of the product included in the order.
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: ref('products')
+                    field: product_id
+          - name: quantity
+            data_type: number
+            description: Number of units of the product ordered.
+            data_tests:
+              - not_null
+              - positive_values
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: Indicator showing if the record was deleted in source.
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: Timestamp of the last sync from Fivetran.
+            data_tests:
+              - not_null
+        config:
+          loaded_at_field: _fivetran_synced
+
+      - name: products
+        description: Contains information about products available for sale.
+        columns:
+          - name: product_id
+            data_type: varchar
+            description: Unique identifier of the product.
+            data_tests:
+              - unique
+              - not_null
+          - name: price
+            data_type: float
+            description: Price of the product.
+            data_tests:
+              - not_null
+              - positive_values
+          - name: name
+            data_type: varchar
+            description: Name of the product.
+            data_tests:
+              - not_null
+          - name: inventory
+            data_type: number
+            description: Current inventory level (number of units available).
+            data_tests:
+              - not_null
+              - positive_values
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: Indicator showing if the record was deleted in source.
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: Timestamp of the last sync from Fivetran.
+            data_tests:
+              - not_null
+        config:
+          loaded_at_field: _fivetran_synced
+
+      - name: promos
+        description: Contains information about promotional codes and discounts.
+        columns:
+          - name: promo_id
+            data_type: varchar
+            description: Unique identifier for the promotion.
+            data_tests:
+              - unique
+              - not_null
+          - name: discount
+            data_type: number
+            description: Discount percentage or value applied by the promotion.
+            data_tests:
+              - not_null
+              - positive_values
+          - name: status
+            data_type: varchar
+            description: Current status of the promotion (e.g., active, expired, canceled).
+            data_tests:
+              - not_null
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: Indicator showing if the record was deleted in source.
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: Timestamp of the last sync from Fivetran.
+            data_tests:
+              - not_null
+        config:
+          loaded_at_field: _fivetran_synced
+
+      - name: users
+        description: Contains customer profile information.
+        columns:
+          - name: user_id
+            data_type: varchar
+            description: Unique identifier for the user.
+            data_tests:
+              - unique
+              - not_null
+          - name: updated_at
+            data_type: timestamp_tz
+            description: Timestamp of the last user profile update.
+          - name: address_id
+            data_type: varchar
+            description: Default address associated with the user.
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: ref('addresses')
+                    field: address_id
+          - name: last_name
+            data_type: varchar
+            description: User’s last name.
+            data_tests:
+              - not_null
+          - name: created_at
+            data_type: timestamp_tz
+            description: Timestamp when the user account was created.
+            data_tests:
+              - not_null
+          - name: phone_number
+            data_type: varchar
+            description: User’s phone number.
+          - name: total_orders
+            data_type: number
+            description: Total number of orders placed by the user.
+            data_tests:
+              - positive_values
+          - name: first_name
+            data_type: varchar
+            description: User’s first name.
+            data_tests:
+              - not_null
+          - name: email
+            data_type: varchar
+            description: User’s email address.
+            data_tests:
+              - not_null
+          - name: _fivetran_deleted
+            data_type: boolean
+            description: Indicator showing if the record was deleted in source.
+          - name: _fivetran_synced
+            data_type: timestamp_tz
+            description: Timestamp of the last sync from Fivetran.
+            data_tests:
+              - not_null
+        config:
+          loaded_at_field: _fivetran_synced
+
+    config:
+      freshness:
+        warn_after: {count: 365, period: day}
+        error_after: {count: 730, period: day}
