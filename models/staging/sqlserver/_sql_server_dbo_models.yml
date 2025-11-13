@@ -38,14 +38,16 @@ models:
         data_type: varchar(50)
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_users')
-              field: user_id
+              arguments:
+                to: ref('stg_sql_server_dbo_users')
+                field: user_id
       - name: product_id
         data_type: varchar(50)
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_products')
-              field: product_id
+              arguments:
+                to: ref('stg_sql_server_dbo_products')
+                field: product_id
       - name: session_id
         data_type: varchar(50)
       - name: created_at
@@ -54,8 +56,9 @@ models:
         data_type: varchar(50)
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_orders')
-              field: order_id
+              arguments:
+                to: ref('stg_sql_server_dbo_orders')
+                field: order_id
       - name: _fivetran_deleted
         data_type: boolean
       - name: _fivetran_synced
@@ -68,8 +71,9 @@ models:
         data_type: varchar
         tests:
           - relationships:
-              to: ref('base_sql_server_dbo_events')
-              field: event_type_id
+              arguments:
+                to: ref('base_sql_server_dbo_events')
+                field: event_type_id
       - name: event_type
         data_type: varchar
       - name: _fivetran_deleted
@@ -93,16 +97,18 @@ models:
         data_type: varchar
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_addresses')
-              field: address_id
+              arguments:
+                to: ref('stg_sql_server_dbo_addresses')
+                field: address_id
       - name: created_at
         data_type: timestamp_tz
       - name: promo_id
         data_type: varchar
         tests:
           - relationships:
-              to: ref('promos')
-              field: promo_id
+              arguments:
+                to: ref('promos')
+                field: promo_id
       - name: estimated_delivery_at
         data_type: timestamp_tz
       - name: order_cost
@@ -111,8 +117,9 @@ models:
         data_type: varchar
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_users')
-              field: user_id
+              arguments:
+                to: ref('stg_sql_server_dbo_users')
+                field: user_id
       - name: order_total
         data_type: float
       - name: delivered_at
@@ -133,14 +140,16 @@ models:
         data_type: varchar
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_orders')
-              field: order_id
+              arguments:
+                to: ref('stg_sql_server_dbo_orders')
+                field: order_id
       - name: product_id
         data_type: varchar
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_products')
-              field: product_id
+              arguments:
+                to: ref('stg_sql_server_dbo_products')
+                field: product_id
       - name: quantity
         data_type: number
       - name: _fivetran_deleted
@@ -211,8 +220,9 @@ models:
         data_type: varchar
         tests:
           - relationships:
-              to: ref('stg_sql_server_dbo_addresses')
-              field: address_id
+              arguments:
+                to: ref('stg_sql_server_dbo_addresses')
+                field: address_id
       - name: last_name
         data_type: varchar
       - name: created_at
@@ -238,8 +248,9 @@ models:
         tests:
           - unique
           - relationships:
-              to: ref('stg_sql_server_dbo_shipping_service')
-              field: shipping_id
+              arguments:
+                to: ref('stg_sql_server_dbo_shipping_service')
+                field: shipping_id
       - name: shipping_service
         data_type: varchar
 
@@ -252,8 +263,9 @@ models:
           - not_null
           - unique
           - relationships:
-              to: ref('base_sql_server_dbo_addresses')
-              field: country_id
+              arguments:
+                to: ref('base_sql_server_dbo_addresses')
+                field: country_id
       - name: zipcode
         description: "Postal code from the address."
         tests:

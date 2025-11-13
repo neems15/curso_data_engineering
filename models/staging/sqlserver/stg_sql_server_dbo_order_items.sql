@@ -8,7 +8,6 @@ WITH stg_order_items AS (
 renamed_casted AS (
     SELECT
         order_id::VARCHAR(50) 
-        , user_id::VARCHAR(50)
         , product_id::VARCHAR(50)
         , quantity::NUMBER
         , convert_timezone ('UTC', _fivetran_synced) AS date_load

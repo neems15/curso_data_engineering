@@ -6,7 +6,7 @@ WITH stg_shipping_service AS (
 
 renamed_casted AS (
     SELECT DISTINCT
-    md5(shipping_service) AS shipping_id
+    MD5(shipping_service) AS shipping_id
     , shipping_service AS nombre
         
     FROM stg_shipping_service

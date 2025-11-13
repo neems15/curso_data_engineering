@@ -5,9 +5,9 @@ WITH stg_zipcodes AS (
 
 renamed_casted AS (
     SELECT
-        , md5(zipcode) as zipcode_id 
-        , zipcode
-        , md5(state) as state_id 
+        MD5(zipcode_id) as zipcode_id 
+        , zipcode AS zipcode_name
+        , MD5(state) as state_id 
         , state
         , date_load
         , delete_status

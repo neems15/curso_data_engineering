@@ -6,7 +6,7 @@ WITH stg_status AS (
 
 renamed_casted AS (
     SELECT DISTINCT
-    md5(status) AS status_id
+    MD5(status_id) AS status_id
     , status
         
     FROM stg_status
@@ -15,7 +15,7 @@ renamed_casted AS (
      
     SELECT 
         'no_status' AS status,
-        md5('no_status') AS status_id,
+        MD5('no_status') AS status_id
     )
 
 SELECT * FROM renamed_casted

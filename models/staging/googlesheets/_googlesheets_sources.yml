@@ -11,14 +11,10 @@ sources:
       schema: false
       identifier: false
 
-    freshness:
-      warn_after: {count: 365, period: day}
-      error_after: {count: 730, period: day}
 
     tables:
 
       - name: budget
-        loaded_at_field: _fivetran_synced
         description: >
           Data about budget in demo.
         columns:
@@ -51,9 +47,15 @@ sources:
               - not_null
 
 
+        config:
+          loaded_at_field: _fivetran_synced
       - name: users
         columns:
           - name: Nombre
           - name: DNI
           - name: email
           - name: fecha_alta_sistema
+    config:
+      freshness:
+        warn_after: {count: 365, period: day}
+        error_after: {count: 730, period: day}

@@ -5,7 +5,7 @@ WITH stg_addresses AS (
 
 renamed_casted AS (
     SELECT
-        md5(address_id) AS address_id
+        MD5(address_id) AS address_id
         , address_id AS address_name
         , address
         , date_load

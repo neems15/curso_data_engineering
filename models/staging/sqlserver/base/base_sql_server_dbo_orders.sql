@@ -1,7 +1,8 @@
 {{ 
     config(
         materialized = 'incremental',
-        unique_key = 'order_id'
+        unique_key = 'order_id',
+        on_schema_change = 'fail'
     ) 
 }}
 
@@ -11,7 +12,7 @@ WITH source AS (
     FROM {{ source('sql_server_dbo', 'orders') }}
 
     {% if is_incremental() %}
-        WHERE _fivetran_synced > (SELECT MAX(_fivetran_synced) FROM {{ this }})
+        WHERE _fivetran_synced > (SELECT MAX(date_load) FROM {{ this }})
     {% endif %}
 
 ),
@@ -31,11 +32,13 @@ renamed_casted AS (
         , shipping_cost::FLOAT AS shipping_cost_usd
         , order_total::FLOAT AS total_order_cost_usd
         , tracking_id::VARCHAR(256) AS tracking_id
-        , md5(shipping_service)::VARCHAR(256) AS shipping_id -------------------------------------
+        , MD5(shipping_service) AS shipping_id
+        , shipping_service AS shipping_service -------------------------------------
         , convert_timezone('UTC', estimated_delivery_at) AS estimated_delivery_at_utc
         , convert_timezone('UTC', delivered_at) AS delivered_at_utc
         , DATEDIFF(day, created_at, delivered_at) AS days_to_deliver
-        , md5(status)::VARCHAR(256) AS status_id
+        , MD5(status)::VARCHAR(256) AS status_id
+        , status::VARCHAR(256) AS status
         , convert_timezone('UTC', _fivetran_synced) AS date_load
         , _fivetran_deleted::BOOLEAN AS delete_status
     FROM source

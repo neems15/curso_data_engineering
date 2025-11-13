@@ -5,7 +5,7 @@ WITH stg_countries AS (
 
 renamed_casted AS (
     SELECT DISTINCT
-        md5(country) as country_id
+        MD5(country) as country_id
         , country AS country_name
         , md5(zipcode) as zipcode_id 
         , zipcode

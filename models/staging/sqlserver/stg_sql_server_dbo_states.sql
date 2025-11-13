@@ -5,7 +5,7 @@ WITH stg_states AS (
 
 renamed_casted AS (
     SELECT DISTINCT
-        , md5(state) as state_id 
+        MD5(state) as state_id 
         , state
         , date_load
         , delete_status
